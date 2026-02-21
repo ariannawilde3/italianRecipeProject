@@ -40,28 +40,9 @@ export default function MappaPage() {
 
       <MappaItalia onRegioneClick={handleRegioneClick} conteggio={conteggio} />
 
-      <div className="mappa-legenda">
-        <div className="legenda-item">
-          <div className="legenda-colore" style={{ background: "#e8e0d4" }} />
-          <span>0 ricette</span>
-        </div>
-        <div className="legenda-item">
-          <div className="legenda-colore" style={{ background: "#f0c8a0" }} />
-          <span>1-2</span>
-        </div>
-        <div className="legenda-item">
-          <div className="legenda-colore" style={{ background: "#e8a060" }} />
-          <span>3-5</span>
-        </div>
-        <div className="legenda-item">
-          <div className="legenda-colore" style={{ background: "#d07030" }} />
-          <span>6-10</span>
-        </div>
-        <div className="legenda-item">
-          <div className="legenda-colore" style={{ background: "#b84020" }} />
-          <span>10+</span>
-        </div>
-      </div>
+      <p className="mappa-istruzione">
+        Passa il mouse su una regione per i dettagli, clicca per vedere le ricette
+      </p>
 
       {regioneSelezionata && (
         <div style={{ marginTop: "2rem" }}>
