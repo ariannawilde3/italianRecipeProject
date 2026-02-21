@@ -14,114 +14,110 @@ interface LabelConfig {
   x: number;
   y: number;
   fontSize: number;
-  leader?: { fromX: number; fromY: number };
 }
 
 const LABEL_CONFIG: Record<RegioneItaliana, LabelConfig> = {
   "Valle d'Aosta": {
-    lines: ["Valle d'Aosta"],
-    x: -45,
-    y: 72,
-    fontSize: 9,
-    leader: { fromX: 40, fromY: 95 },
+    lines: ["V. d'Aosta"],
+    x: 42,
+    y: 100,
+    fontSize: 6,
   },
   Piemonte: {
     lines: ["Piemonte"],
     x: 82,
-    y: 150,
-    fontSize: 10,
+    y: 148,
+    fontSize: 11,
   },
   Lombardia: {
     lines: ["Lombardia"],
-    x: 190,
+    x: 192,
     y: 112,
-    fontSize: 10,
+    fontSize: 11,
   },
   "Trentino-Alto Adige": {
     lines: ["Trentino-", "Alto Adige"],
     x: 255,
-    y: 45,
-    fontSize: 9,
+    y: 40,
+    fontSize: 8,
   },
   Veneto: {
     lines: ["Veneto"],
-    x: 278,
+    x: 280,
     y: 128,
-    fontSize: 10,
+    fontSize: 11,
   },
   "Friuli Venezia Giulia": {
-    lines: ["Friuli V.G."],
-    x: 340,
-    y: 72,
-    fontSize: 8,
+    lines: ["Friuli", "Venezia G."],
+    x: 338,
+    y: 62,
+    fontSize: 7,
   },
   Liguria: {
     lines: ["Liguria"],
-    x: -15,
-    y: 228,
-    fontSize: 9,
-    leader: { fromX: 80, fromY: 222 },
+    x: 128,
+    y: 218,
+    fontSize: 7,
   },
   "Emilia-Romagna": {
     lines: ["Emilia-Romagna"],
-    x: 225,
+    x: 220,
     y: 198,
-    fontSize: 9,
+    fontSize: 10,
   },
   Toscana: {
     lines: ["Toscana"],
     x: 232,
     y: 300,
-    fontSize: 11,
+    fontSize: 12,
   },
   Umbria: {
     lines: ["Umbria"],
     x: 300,
     y: 318,
-    fontSize: 8,
+    fontSize: 7,
   },
   Marche: {
     lines: ["Marche"],
     x: 348,
-    y: 290,
+    y: 288,
     fontSize: 8,
   },
   Lazio: {
     lines: ["Lazio"],
-    x: 302,
+    x: 300,
     y: 390,
-    fontSize: 11,
+    fontSize: 12,
   },
   Abruzzo: {
     lines: ["Abruzzo"],
     x: 370,
-    y: 342,
+    y: 340,
     fontSize: 8,
   },
   Molise: {
     lines: ["Molise"],
-    x: 445,
-    y: 365,
-    fontSize: 9,
-    leader: { fromX: 405, fromY: 378 },
+    x: 400,
+    y: 380,
+    fontSize: 6,
   },
   Campania: {
     lines: ["Campania"],
-    x: 380,
+    x: 385,
     y: 442,
     fontSize: 9,
   },
   Puglia: {
     lines: ["Puglia"],
-    x: 505,
-    y: 435,
-    fontSize: 10,
+    x: 500,
+    y: 430,
+    fontSize: 11,
   },
   Basilicata: {
     lines: ["Basilicata"],
-    x: 467,
+    x: 468,
     y: 478,
-    fontSize: 8,
+    fontSize: 7,
   },
   Calabria: {
     lines: ["Calabria"],
@@ -133,13 +129,13 @@ const LABEL_CONFIG: Record<RegioneItaliana, LabelConfig> = {
     lines: ["Sicilia"],
     x: 395,
     y: 698,
-    fontSize: 11,
+    fontSize: 12,
   },
   Sardegna: {
     lines: ["Sardegna"],
     x: 98,
     y: 498,
-    fontSize: 10,
+    fontSize: 11,
   },
 };
 
@@ -162,7 +158,7 @@ export default function MappaItalia({
   return (
     <div className="mappa-container">
       <svg
-        viewBox="-80 -10 720 810"
+        viewBox="0 0 610 793"
         className="mappa-svg"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -229,32 +225,15 @@ export default function MappaItalia({
                 }}
               />
 
-              {lbl.leader && (
-                <line
-                  x1={lbl.leader.fromX}
-                  y1={lbl.leader.fromY}
-                  x2={lbl.x + 20}
-                  y2={lbl.y - 2}
-                  stroke="#555"
-                  strokeWidth="1"
-                  strokeDasharray="3,2"
-                  pointerEvents="none"
-                />
-              )}
-
               <text
                 x={lbl.x}
                 y={lbl.y}
-                textAnchor={lbl.leader ? "end" : "middle"}
+                textAnchor="middle"
                 fontSize={lbl.fontSize}
                 fill="#2c1810"
-                fontWeight={isHovered ? "700" : "600"}
+                fontWeight={isHovered ? "800" : "700"}
                 pointerEvents="none"
                 className="regione-label"
-                style={{
-                  textShadow:
-                    "0 0 3px rgba(255,255,255,0.95), 0 0 3px rgba(255,255,255,0.95), 0 0 6px rgba(255,255,255,0.7)",
-                }}
               >
                 {lbl.lines.length === 1 ? (
                   lbl.lines[0]
@@ -264,7 +243,7 @@ export default function MappaItalia({
                       <tspan
                         key={i}
                         x={lbl.x}
-                        dy={i === 0 ? 0 : lbl.fontSize + 2}
+                        dy={i === 0 ? 0 : lbl.fontSize + 1}
                       >
                         {line}
                       </tspan>
@@ -276,16 +255,16 @@ export default function MappaItalia({
               {count > 0 && (
                 <g pointerEvents="none">
                   <circle
-                    cx={lbl.x + (lbl.leader ? -15 : 30)}
-                    cy={lbl.y - 16}
+                    cx={lbl.x + 25}
+                    cy={lbl.y - 14}
                     r="10"
                     fill="#c9402d"
                     stroke="white"
                     strokeWidth="2"
                   />
                   <text
-                    x={lbl.x + (lbl.leader ? -15 : 30)}
-                    y={lbl.y - 12}
+                    x={lbl.x + 25}
+                    y={lbl.y - 10}
                     textAnchor="middle"
                     fontSize="9"
                     fill="white"
