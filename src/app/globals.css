@@ -286,7 +286,7 @@ a {
 /* === MAPPA === */
 .mappa-container {
   position: relative;
-  max-width: 550px;
+  max-width: 500px;
   margin: 0 auto;
 }
 
@@ -295,8 +295,14 @@ a {
   height: auto;
 }
 
+.regione-path {
+  transition: all 0.2s ease;
+}
+
 .regione-label {
   font-family: "Segoe UI", system-ui, sans-serif;
+  pointer-events: none;
+  user-select: none;
 }
 
 .mappa-tooltip {
