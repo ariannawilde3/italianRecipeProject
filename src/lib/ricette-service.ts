@@ -21,11 +21,12 @@ const UTENTI_COLLECTION = "utenti";
 export async function creaRicetta(
   ricetta: Omit<Ricetta, "id" | "createdAt" | "likes">
 ): Promise<string> {
-  const docRef = await addDoc(collection(db(), RICETTE_COLLECTION), {
-    ...ricetta,
-    createdAt: Date.now(),
-    likes: 0,
+  // Remove undefined fields – Firestore rejects them
+  const data: Record<string, unknown> = { ...ricetta, createdAt: Date.now(), likes: 0 };
+  Object.keys(data).forEach((key) => {
+    if (data[key] === undefined) delete data[key];
   });
+  const docRef = await addDoc(collection(db(), RICETTE_COLLECTION), data);
   return docRef.id;
 }
 
