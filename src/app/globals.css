@@ -286,17 +286,13 @@ a {
 /* === MAPPA === */
 .mappa-container {
   position: relative;
-  max-width: 500px;
+  max-width: 550px;
   margin: 0 auto;
 }
 
 .mappa-svg {
   width: 100%;
   height: auto;
-}
-
-.regione-path:hover {
-  filter: brightness(1.1);
 }
 
 .regione-label {
@@ -312,39 +308,39 @@ a {
   border: 2px solid var(--bordo);
   border-radius: var(--raggio);
   padding: 0.5rem 1rem;
-  box-shadow: var(--ombra);
+  box-shadow: var(--ombra-hover);
   display: flex;
   gap: 0.5rem;
   align-items: center;
   font-size: 0.9rem;
   pointer-events: none;
+  white-space: nowrap;
+}
+
+.mappa-tooltip-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
 }
 
 .mappa-tooltip strong {
-  color: var(--rosso);
+  color: var(--marrone);
 }
 
-.mappa-legenda {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin-top: 1rem;
-  flex-wrap: wrap;
-  font-size: 0.8rem;
+.mappa-tooltip-count {
   color: var(--testo-chiaro);
+  font-size: 0.85rem;
 }
 
-.legenda-item {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.legenda-colore {
-  width: 16px;
-  height: 16px;
-  border-radius: 3px;
-  border: 1px solid var(--bordo);
+.mappa-istruzione {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--testo-chiaro);
+  font-style: italic;
 }
 
 /* === CARDS === */
