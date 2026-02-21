@@ -21,11 +21,12 @@ const UTENTI_COLLECTION = "utenti";
 export async function creaRicetta(
   ricetta: Omit<Ricetta, "id" | "createdAt" | "likes">
 ): Promise<string> {
-  const docRef = await addDoc(collection(db(), RICETTE_COLLECTION), {
-    ...ricetta,
-    createdAt: Date.now(),
-    likes: 0,
+  // Remove undefined fields – Firestore rejects them
+  const data: Record<string, unknown> = { ...ricetta, createdAt: Date.now(), likes: 0 };
+  Object.keys(data).forEach((key) => {
+    if (data[key] === undefined) delete data[key];
   });
+  const docRef = await addDoc(collection(db(), RICETTE_COLLECTION), data);
   return docRef.id;
 }
 
@@ -38,13 +39,15 @@ export async function getRicetta(id: string): Promise<Ricetta | null> {
 export async function getRicettePerRegione(
   regione: RegioneItaliana
 ): Promise<Ricetta[]> {
+  // Only filter by regione to avoid needing a composite Firestore index
   const q = query(
     collection(db(), RICETTE_COLLECTION),
-    where("regione", "==", regione),
-    orderBy("createdAt", "desc")
+    where("regione", "==", regione)
   );
   const snapshot = await getDocs(q);
-  return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Ricetta);
+  const ricette = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Ricetta);
+  // Sort client-side by createdAt descending
+  return ricette.sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
 }
 
 export async function getTutteRicette(): Promise<Ricetta[]> {
