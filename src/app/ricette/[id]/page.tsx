@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
-import { getRicetta } from "@/lib/ricette-service";
+import { getRicetta, eliminaRicetta } from "@/lib/ricette-service";
 import { togglePreferito } from "@/lib/ricette-service";
 import { useAuth } from "@/lib/auth-context";
 import { Ricetta } from "@/types";
@@ -18,6 +18,10 @@ export default function DettaglioRicettaPage({
   const [ricetta, setRicetta] = useState<Ricetta | null>(null);
   const [loading, setLoading] = useState(true);
   const [isPreferito, setIsPreferito] = useState(false);
+  const [mostraConferma, setMostraConferma] = useState(false);
+  const [eliminando, setEliminando] = useState(false);
+
+  const isAutore = user && ricetta && user.uid === ricetta.autoreId;
 
   useEffect(() => {
     getRicetta(id)
@@ -40,6 +44,19 @@ export default function DettaglioRicettaPage({
         ? { ...prev, likes: isPreferito ? prev.likes - 1 : prev.likes + 1 }
         : prev
     );
+  };
+
+  const handleElimina = async () => {
+    if (!ricetta) return;
+    setEliminando(true);
+    try {
+      await eliminaRicetta(ricetta.id);
+      router.push("/ricette");
+    } catch (err) {
+      console.error("Errore nell'eliminazione:", err);
+      setEliminando(false);
+      setMostraConferma(false);
+    }
   };
 
   if (loading) {
@@ -111,6 +128,23 @@ export default function DettaglioRicettaPage({
             )}
           </div>
 
+          {isAutore && (
+            <div className="dettaglio-azioni-autore">
+              <button
+                onClick={() => router.push(`/ricette/${ricetta.id}/modifica`)}
+                className="btn btn-outline btn-sm"
+              >
+                ✏️ Modifica
+              </button>
+              <button
+                onClick={() => setMostraConferma(true)}
+                className="btn btn-danger btn-sm"
+              >
+                🗑️ Elimina
+              </button>
+            </div>
+          )}
+
           <p style={{ color: "var(--testo-chiaro)", fontSize: "1.05rem" }}>
             {ricetta.descrizione}
           </p>
@@ -145,6 +179,34 @@ export default function DettaglioRicettaPage({
           </button>
         </div>
       </div>
+
+      {mostraConferma && (
+        <div className="conferma-overlay" onClick={() => setMostraConferma(false)}>
+          <div className="conferma-dialog" onClick={(e) => e.stopPropagation()}>
+            <h3>Eliminare questa ricetta?</h3>
+            <p>
+              Stai per eliminare <strong>&ldquo;{ricetta.titolo}&rdquo;</strong>.
+              Questa azione non può essere annullata.
+            </p>
+            <div className="conferma-azioni">
+              <button
+                onClick={() => setMostraConferma(false)}
+                className="btn btn-outline"
+                disabled={eliminando}
+              >
+                Annulla
+              </button>
+              <button
+                onClick={handleElimina}
+                className="btn btn-danger"
+                disabled={eliminando}
+              >
+                {eliminando ? "Eliminazione..." : "Elimina"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

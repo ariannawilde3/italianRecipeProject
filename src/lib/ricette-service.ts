@@ -5,6 +5,7 @@ import {
   getDoc,
   getDocs,
   updateDoc,
+  deleteDoc,
   query,
   where,
   orderBy,
@@ -28,6 +29,21 @@ export async function creaRicetta(
   });
   const docRef = await addDoc(collection(db(), RICETTE_COLLECTION), data);
   return docRef.id;
+}
+
+export async function aggiornaRicetta(
+  id: string,
+  data: Partial<Omit<Ricetta, "id" | "createdAt" | "likes" | "autoreId">>
+): Promise<void> {
+  const cleaned: Record<string, unknown> = { ...data };
+  Object.keys(cleaned).forEach((key) => {
+    if (cleaned[key] === undefined) delete cleaned[key];
+  });
+  await updateDoc(doc(db(), RICETTE_COLLECTION, id), cleaned);
+}
+
+export async function eliminaRicetta(id: string): Promise<void> {
+  await deleteDoc(doc(db(), RICETTE_COLLECTION, id));
 }
 
 export async function getRicetta(id: string): Promise<Ricetta | null> {
