@@ -3,21 +3,30 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
-import { creaRicetta } from "@/lib/ricette-service";
-import { REGIONI, RegioneItaliana } from "@/types";
+import { creaRicetta, aggiornaRicetta } from "@/lib/ricette-service";
+import { REGIONI, RegioneItaliana, Ricetta } from "@/types";
 
-export default function FormRicetta() {
+interface FormRicettaProps {
+  ricettaEsistente?: Ricetta;
+}
+
+export default function FormRicetta({ ricettaEsistente }: FormRicettaProps) {
+  const isModifica = !!ricettaEsistente;
   const { user, utente } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [errore, setErrore] = useState("");
 
-  const [titolo, setTitolo] = useState("");
-  const [descrizione, setDescrizione] = useState("");
-  const [ingredienti, setIngredienti] = useState("");
-  const [istruzioni, setIstruzioni] = useState("");
-  const [regione, setRegione] = useState<RegioneItaliana>("Lazio");
-  const [immagineUrl, setImmagineUrl] = useState("");
+  const [titolo, setTitolo] = useState(ricettaEsistente?.titolo ?? "");
+  const [descrizione, setDescrizione] = useState(ricettaEsistente?.descrizione ?? "");
+  const [ingredienti, setIngredienti] = useState(
+    ricettaEsistente?.ingredienti?.join("\n") ?? ""
+  );
+  const [istruzioni, setIstruzioni] = useState(ricettaEsistente?.istruzioni ?? "");
+  const [regione, setRegione] = useState<RegioneItaliana>(
+    ricettaEsistente?.regione ?? "Lazio"
+  );
+  const [immagineUrl, setImmagineUrl] = useState(ricettaEsistente?.immagineUrl ?? "");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,21 +49,32 @@ export default function FormRicetta() {
         .map((i) => i.trim())
         .filter((i) => i.length > 0);
 
-      const id = await creaRicetta({
-        titolo: titolo.trim(),
-        descrizione: descrizione.trim(),
-        ingredienti: listaIngredienti,
-        istruzioni: istruzioni.trim(),
-        regione,
-        immagineUrl: immagineUrl.trim() || undefined,
-        autoreId: user.uid,
-        autoreNome: utente.nome,
-        autoreFoto: utente.fotoUrl,
-      });
-
-      router.push(`/ricette/${id}`);
+      if (isModifica) {
+        await aggiornaRicetta(ricettaEsistente.id, {
+          titolo: titolo.trim(),
+          descrizione: descrizione.trim(),
+          ingredienti: listaIngredienti,
+          istruzioni: istruzioni.trim(),
+          regione,
+          immagineUrl: immagineUrl.trim() || undefined,
+        });
+        router.push(`/ricette/${ricettaEsistente.id}`);
+      } else {
+        const id = await creaRicetta({
+          titolo: titolo.trim(),
+          descrizione: descrizione.trim(),
+          ingredienti: listaIngredienti,
+          istruzioni: istruzioni.trim(),
+          regione,
+          immagineUrl: immagineUrl.trim() || undefined,
+          autoreId: user.uid,
+          autoreNome: utente.nome,
+          autoreFoto: utente.fotoUrl,
+        });
+        router.push(`/ricette/${id}`);
+      }
     } catch (err) {
-      console.error("Errore nella creazione:", err);
+      console.error("Errore:", err);
       setErrore("Si è verificato un errore. Riprova.");
     } finally {
       setLoading(false);
@@ -72,7 +92,7 @@ export default function FormRicetta() {
 
   return (
     <form onSubmit={handleSubmit} className="form-ricetta">
-      <h2>Pubblica una Nuova Ricetta</h2>
+      <h2>{isModifica ? "Modifica Ricetta" : "Pubblica una Nuova Ricetta"}</h2>
 
       {errore && <div className="form-errore">{errore}</div>}
 
@@ -152,7 +172,13 @@ export default function FormRicetta() {
       </div>
 
       <button type="submit" className="btn btn-primary btn-lg" disabled={loading}>
-        {loading ? "Pubblicazione..." : "Pubblica Ricetta"}
+        {loading
+          ? isModifica
+            ? "Salvataggio..."
+            : "Pubblicazione..."
+          : isModifica
+            ? "Salva Modifiche"
+            : "Pubblica Ricetta"}
       </button>
     </form>
   );

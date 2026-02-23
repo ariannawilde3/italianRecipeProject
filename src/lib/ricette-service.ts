@@ -30,6 +30,18 @@ export async function creaRicetta(
   return docRef.id;
 }
 
+export async function aggiornaRicetta(
+  id: string,
+  data: Partial<Omit<Ricetta, "id" | "createdAt" | "likes" | "autoreId" | "autoreNome" | "autoreFoto">>
+): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const cleanData: Record<string, any> = { ...data };
+  Object.keys(cleanData).forEach((key) => {
+    if (cleanData[key] === undefined) delete cleanData[key];
+  });
+  await updateDoc(doc(db(), RICETTE_COLLECTION, id), cleanData);
+}
+
 export async function getRicetta(id: string): Promise<Ricetta | null> {
   const docSnap = await getDoc(doc(db(), RICETTE_COLLECTION, id));
   if (!docSnap.exists()) return null;
