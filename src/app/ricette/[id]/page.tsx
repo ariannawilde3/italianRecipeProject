@@ -143,6 +143,14 @@ export default function DettaglioRicettaPage({
           >
             Vedi sulla Mappa
           </button>
+          {user && user.uid === ricetta.autoreId && (
+            <button
+              onClick={() => router.push(`/ricette/${ricetta.id}/modifica`)}
+              className="btn btn-secondary"
+            >
+              Modifica Ricetta
+            </button>
+          )}
         </div>
       </div>
     </div>
